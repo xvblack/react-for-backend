@@ -20,14 +20,25 @@ const Noop = () => {
 let stack = {
   path: [] as string[],
   rerun: () => {},
+  states: new Map<string, any>(),
+  track: {
+    useStateCount: 0,
+  },
+  globals: {
+    allApis: new Map<string, any>(),
+  },
 };
 
-let states = new Map<string, any>();
-
-let allApis = new Map<string, any>();
+const stackKey = (key: string) => {
+  return [...stack.path, key].join(".");
+};
 
 const useState = (defaultValue: any) => {
-  const key = stack.path.join(".");
+  const states = stack.states;
+  const useStateCount = stack.track.useStateCount;
+  stack.track.useStateCount += 1;
+  const key = stackKey(`__useState_${useStateCount}`);
+
   const rerun = stack.rerun;
   console.log("Using state", states, { key });
   if (!states.has(key)) {
@@ -51,7 +62,25 @@ const API = ({
   path: string;
   callback: (req: any) => void;
 }) => {
-  allApis.set(path, callback);
+  stack.globals.allApis.set(path, callback);
+  return <Noop></Noop>;
+};
+
+const useEffect = (effect: any) => {
+  const path = stack.track.useEffectInitHistory;
+};
+
+const File = ({ path }: { path: string }) => {
+  useEffect(() => {
+    const callback = async () => {
+      const watcher = Deno.watchFs(path);
+      for await (const event of watcher) {
+        console.log(">>>> event", event);
+        // Example event: { kind: "create", paths: [ "/home/alice/deno/foo.txt" ] }
+      }
+    };
+    callback();
+  });
   return <Noop></Noop>;
 };
 
@@ -100,5 +129,5 @@ const runReactiveServer = (path: string[], element: Element) => {
 };
 
 const server = run(<Root></Root>);
-console.log({ allApis });
-allApis.get("root")();
+console.log({ allApis: stack.globals.allApis });
+stack.globals.allApis.get("root")();
