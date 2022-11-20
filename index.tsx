@@ -47,18 +47,30 @@ const Root = () => {
 const Component = () => {
   const [state, setState] = useState(0);
   console.log({ state });
-  return (
-    <API
-      path={"root"}
-      callback={() => {
-        setState(state + 1);
-      }}
-    ></API>
-  );
+  if (state === 0) {
+    return (
+      <API
+        path={"root"}
+        callback={() => {
+          setState(state + 1);
+        }}
+      ></API>
+    );
+  } else {
+    return (
+      <Noop>
+        <API
+          path={"child"}
+          callback={() => {
+            setState(state + 1);
+          }}
+        ></API>
+      </Noop>
+    );
+  }
 };
 
 const server = run(<Root></Root>);
 console.log(apis);
 apis.get("root")();
-// console.log({ allApis: stack.globals.allApis });
-// stack.globals.allApis.get("root")();
+console.log(apis);
