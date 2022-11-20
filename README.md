@@ -60,7 +60,7 @@ stateful softwares with react style threading. The planned steps are:
 
 - [x] Implement a lightweight react for backend environment, currently
   chose to be deno.
-- [] Build a incremental analyzer of js projects, demonstrating the
+- [ ] Build a incremental analyzer of js projects, demonstrating the
   powerfulness of react-style threading with a reactive web UI.
-- [] Experiment with hardcore database building with the "lightweight
+- [ ] Experiment with hardcore database building with the "lightweight
   for-backend react", for better understanding its usefulness.
